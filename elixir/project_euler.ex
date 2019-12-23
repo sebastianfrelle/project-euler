@@ -34,21 +34,20 @@ defmodule ProjectEuler do
     # 99_999, 99899, 99799, 99699, ..., 98989, 98889, 98789, 98689, ...
     # palindromes = Stream.iterate(999_999, fn x -> x - 1_100 end)
     palindromes_six_digits =
-        for i <- 0..8, j <- 0..9, k <- 0..9 do
-          999_999 - 100_001 * i - 10_010 * j - 1_100 * k
-        end
+      for i <- 0..8, j <- 0..9, k <- 0..9 do
+        999_999 - 100_001 * i - 10_010 * j - 1_100 * k
+      end
 
-      palindromes_five_digits =
-        for i <- 0..8, j <- 0..9, k <- 0..9 do
-          99_999 - 10_001 * i - 1_010 * j - 100 * k
-        end
+    palindromes_five_digits =
+      for i <- 0..8, j <- 0..9, k <- 0..9 do
+        99_999 - 10_001 * i - 1_010 * j - 100 * k
+      end
 
-      palindromes_six_digits
-      |> Stream.concat(palindromes_five_digits)
-      |> Enum.find(fn x ->
-        Enum.any?(999..100, fn y -> rem(x, y) == 0 and x / y < 1000 end)
-      end)
-    end
+    palindromes_six_digits
+    |> Stream.concat(palindromes_five_digits)
+    |> Enum.find(fn x ->
+      Enum.any?(999..100, fn y -> rem(x, y) == 0 and x / y < 1000 end)
+    end)
   end
 
   def benchmark(f) do
@@ -56,6 +55,5 @@ defmodule ProjectEuler do
     |> :timer.tc()
     |> elem(0)
     |> Kernel./(1_000_000)
-    |> Kernel./(5000
   end
 end
