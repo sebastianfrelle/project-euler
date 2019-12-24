@@ -50,10 +50,55 @@ defmodule ProjectEuler do
     end)
   end
 
+  def p5 do
+    2..20
+    |> Enum.reduce(1, fn element, acc ->
+      # Figure out if `element` is already "represented" in the accumulated
+      # product.
+      case rem(acc, element) do
+        0 ->
+          # `element` is already represented in the accumulated product, so
+          # we can just proceed directly to the next element.
+          acc
+
+        _ ->
+          # We need to represent `element` in the accumulated product. We can
+          # do this by just multiplying `acc` by `element`, but there's a
+          # better way: we can find the smallest integer `d` that, when
+          # multiplied by `acc`, yields a number that is *also* divisible by
+          # `element`, i.e. `rem(acc * d, element) == 0`.
+          #   For prime numbers, `d == element`.
+          #   For non-primes, `rem(element, d) == 0 and d < element`.
+          # That way, we may just find a smaller product total.
+          acc *
+            Enum.find(2..element, fn d ->
+              rem(acc * d, element) == 0
+            end)
+      end
+    end)
+  end
+
+  def p5_without_comments do
+    2..20
+    |> Enum.reduce(1, fn element, acc ->
+      case rem(acc, element) do
+        0 ->
+          acc
+
+        _ ->
+          acc *
+            Enum.find(2..element, fn d ->
+              rem(acc * d, element) == 0
+            end)
+      end
+    end)
+  end
+
   def benchmark(f) do
-    f
+    fn -> Enum.each(0..499, fn _ -> f.() end) end
     |> :timer.tc()
     |> elem(0)
     |> Kernel./(1_000_000)
+    |> Kernel./(500)
   end
 end
