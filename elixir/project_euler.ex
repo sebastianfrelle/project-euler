@@ -82,14 +82,8 @@ defmodule ProjectEuler do
     2..20
     |> Enum.reduce(1, fn element, acc ->
       case rem(acc, element) do
-        0 ->
-          acc
-
-        _ ->
-          acc *
-            Enum.find(2..element, fn d ->
-              rem(acc * d, element) == 0
-            end)
+        0 -> acc
+        _ -> acc * Enum.find(2..element, fn d -> rem(acc * d, element) == 0 end)
       end
     end)
   end
