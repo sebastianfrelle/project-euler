@@ -88,11 +88,39 @@ defmodule ProjectEuler do
     end)
   end
 
+  def p6 do
+    natural_numbers = 1..100
+
+    sum_of_squares =
+      natural_numbers
+      |> Stream.map(&:math.pow(&1, 2))
+      |> Enum.sum()
+
+    square_of_sum =
+      natural_numbers
+      |> Enum.sum()
+      |> :math.pow(2)
+
+    # Truncate to retrieve integer answer
+    trunc(abs(sum_of_squares - square_of_sum))
+  end
+
+  def p7 do
+    # Only look at odd numbers since the only even prime is 2.
+    Stream.iterate(5, &(&1 + 2))
+    |> Stream.filter(fn x ->
+      Enum.all?(3..trunc(:math.sqrt(x)), fn d -> rem(x, d) != 0 end)
+    end)
+    # Since our stream skips the first two primes (2 and 3), prime no. 10_001 is
+    # located at index 9_998 instead of 10_000.
+    |> Enum.at(9_998)
+  end
+
   def benchmark(f) do
-    fn -> Enum.each(0..499, fn _ -> f.() end) end
+    fn -> Enum.each(0..9, fn _ -> f.() end) end
     |> :timer.tc()
     |> elem(0)
     |> Kernel./(1_000_000)
-    |> Kernel./(500)
+    |> Kernel./(10)
   end
 end
