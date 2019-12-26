@@ -116,6 +116,66 @@ defmodule ProjectEuler do
     |> Enum.at(9_998)
   end
 
+  def p8(numbers, length, window) do
+    first_product =
+      numbers
+      |> Enum.take(window)
+      |> Enum.reduce(&Kernel.*/2)
+
+    Enum.zip(
+      Enum.take(numbers, length - window),
+      Enum.take(numbers, -(length - window))
+    )
+    |> Enum.with_index
+    |> Enum.reduce({first_product, first_product}, fn
+      {{0, _}, offset}, {max_product, _} ->
+        # Recalculate product
+        new_product =
+          numbers
+            |> Enum.slice(offset + 1, window)
+            |> Enum.reduce(&Kernel.*/2)
+
+        {max(max_product, new_product), new_product}
+
+      {{old, new}, offset}, {max_product, last_product} ->
+        new_product = last_product / old * new
+
+        {max(max_product, new_product), new_product}
+    end)
+    |> elem(0)
+    |> trunc()
+  end
+
+  def p8_wrap do
+    numbers =
+      "p8_data"
+      |> File.read!()
+      |> String.graphemes()
+      |> Enum.map(&String.to_integer/1)
+
+    length = length(numbers)
+    window = 13
+
+    p8(numbers, length, window)
+  end
+
+  def p8_benchmark do
+    numbers =
+      "p8_data"
+      |> File.read!()
+      |> String.graphemes()
+      |> Enum.map(&String.to_integer/1)
+
+    length = length(numbers)
+    window = 13
+
+    fn -> Enum.each(0..999, fn _ -> p8(numbers, length, window) end) end
+    |> :timer.tc()
+    |> elem(0)
+    |> Kernel./(1_000_000)
+    |> Kernel./(1000)
+  end
+
   def benchmark(f) do
     fn -> Enum.each(0..9, fn _ -> f.() end) end
     |> :timer.tc()
